@@ -11,8 +11,11 @@ exports.handler = async function(event) {
     };
   }
 
-  const res = await fetch(
-    `https://api.github.com/repos/${process.env.GH_REPO}/${path}${qs}`,
+  const url = path
+    ? `https://api.github.com/repos/${process.env.GH_REPO}/${path}${qs}`
+    : `https://api.github.com/repos/${process.env.GH_REPO}${qs}`;
+
+  const res = await fetch(url,
     {
       headers: {
         'Authorization': `Bearer ${process.env.GH_TOKEN}`,
