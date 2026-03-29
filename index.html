@@ -560,9 +560,7 @@ body {
 // ═══════════════════════════════════════════════════════════════════════
 // CONFIGURACIÓN — editar aquí si cambia el token o el repositorio
 // ═══════════════════════════════════════════════════════════════════════
-const CONFIG = {
-  REPO: 'celebrepar92/tesis',  // solo se usa para el link de GitHub en la UI
-};
+const CONFIG = { REPO: '' };
 // ═══════════════════════════════════════════════════════════════════════
 
 const STATE = { commits:[], issues:[], files:[], repo:null, nowIssue:null };
@@ -613,14 +611,17 @@ function cleanMsg(msg) {
 // ── Boot ──────────────────────────────────────────────────────────────
 async function boot() {
   try {
-    const repoR = await fetch(`https://api.github.com/repos/${CONFIG.REPO}`,{
-      headers:{'Authorization':`Bearer ${CONFIG.TOKEN}`,'Accept':'application/vnd.github+json'}
-    }).then(r=>{
-      if (!r.ok) throw new Error(
-        r.status===401?'Token de acceso inválido':
-        r.status===404?'Repositorio no encontrado':
-        `Error de conexión (${r.status})`);
-      return r.json();
+    // Obtener nombre del repo desde la función (sin exponer nada en el HTML)
+    const { repo } = await fetch('/.netlify/functions/github?path=__repo_name')
+      .then(r => r.json());
+    CONFIG.REPO = repo;
+
+    const repoR = await gh('').then(r => {
+      if (!r || r.message) throw new Error(
+        r?.message === 'Bad credentials' ? 'Token de acceso inválido' :
+        r?.message === 'Not Found'       ? 'Repositorio no encontrado' :
+        `Error de conexión`);
+      return r;
     });
 
     const [commitsR, issuesR, treeR] = await Promise.all([
