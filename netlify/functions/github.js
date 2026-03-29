@@ -14,9 +14,11 @@ exports.handler = async function(event) {
   );
 
   const data = await res.json();
-  return {
-    statusCode: res.status,
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data)
-  };
+  if (path === '__repo_name') {
+    return {
+      statusCode: 200,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ repo: process.env.GH_REPO })
+    };
+  }
 };
