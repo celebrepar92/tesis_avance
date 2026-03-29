@@ -2,25 +2,23 @@ exports.handler = async function(event) {
   const path = event.queryStringParameters.path || '';
   const qs   = event.queryStringParameters.qs   || '';
 
+  const REPO  = 'celebrepar92/tesis';
+  const token = process.env.GH_TOKEN || '';
+
   if (path === '__repo_name') {
     return {
       statusCode: 200,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ repo: process.env.GH_REPO })
+      body: JSON.stringify({ repo: REPO })
     };
   }
 
-  const token = process.env.GH_TOKEN || '';
-  const repo  = process.env.GH_REPO  || '';
-  console.log('GH_REPO:', repo);
-  console.log('GH_TOKEN presente:', token.length > 0);
-  console.log('GH_TOKEN primeros 8 chars:', token.slice(0, 8));
-
   const url = path
-    ? `https://api.github.com/repos/${repo}/${path}${qs}`
-    : `https://api.github.com/repos/${repo}${qs}`;
+    ? `https://api.github.com/repos/${REPO}/${path}${qs}`
+    : `https://api.github.com/repos/${REPO}${qs}`;
 
   console.log('URL:', url);
+  console.log('Token primeros 8:', token.slice(0, 8));
 
   const res = await fetch(url, {
     headers: {
